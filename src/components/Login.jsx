@@ -1,65 +1,84 @@
 import React from "react";
-// import "antd/dist/antd.css";
-import { Form, Input, Button, Checkbox } from "antd";
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import "./login.css"
+import { Form, Input, Button } from "antd";
+import {useNavigate} from "react-router-dom"
+import axios from "axios";
+import Cookies from 'js-cookie';
 
-function Login() {
+
+// import { UserOutlined, LockOutlined } from '@ant-design/icons';
+
+const Login = () =>{
+
+  const navigate = useNavigate();
+
+  const onFinish = async(values) => {
+    console.log('Success:', values);
+    const result = await axios.post("http://localhost:5000/admin/login",{
+      "username": values.username,
+      "password": values.password
+    });
+
+    if(result.data.user){
+      // console.log(result.data);
+      Cookies.set("jwt",result.data.user.webToken)
+      console.log(Cookies.get("jwt"));
+      navigate('/home')
+    }else{
+      var errmsg = document.getElementById('errmsg');
+      errmsg.style.display = 'block';
+    }
+
+  };
+
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo);
+  };
+
+
   return (
-    <Form
-      name="normal_login"
-      className="login-form"
-      initialValues={{
-        remember: true,
-      }}
-      // onFinish={onFinish}
-    >
-      <Form.Item
-        name="username"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Username!",
-          },
-        ]}
-      >
-        <Input
-          prefix={<UserOutlined className="site-form-item-icon" />}
-          placeholder="Username"
-        />
-      </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Password!",
-          },
-        ]}
-      >
-        <Input
-          prefix={<LockOutlined className="site-form-item-icon" />}
-          type="password"
-          placeholder="Password"
-        />
-      </Form.Item>
-      <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+    <>
+     <div className="login-page">
+      <div className="login-box">
+        <div className="illustration-wrapper">
+          <img src="https://images.pexels.com/photos/6289062/pexels-photo-6289062.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Login"/>
+        </div>
+        <Form
+          name="login-form"
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+        >
+          <p className="form-title">ATM ADMIN</p><br/>
+          <p id="errmsg" style={{color:"red",display:"none"}}>Invalid username or password</p>
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
+          >
+            <Input
+              placeholder="Username"
+            />
+          </Form.Item>
 
-        <a className="login-form-forgot" href="">
-          Forgot password
-        </a>
-      </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please input your password!' }]}
+          >
+            <Input.Password 
+              placeholder="Password"
+            />
+          </Form.Item>
 
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
-          Log in
-        </Button>
-        Or <a href="">register now!</a>
-      </Form.Item>
-    </Form>
-  );
+          <Form.Item>
+            <Button type="primary" htmlType="submit" className="login-form-button">
+              LOGIN
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
+    </div>
+    </>
+  )
 }
 
-export default Login;
+export default Login
