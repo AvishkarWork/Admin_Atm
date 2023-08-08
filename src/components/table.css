@@ -1,0 +1,24 @@
+.ant-table {
+    border: 1px solid #393939;
+    border-radius: 6px;
+    box-shadow: 4px 5px 2px #706f6f;
+  }
+  
+  /* Example to style header cells */
+  .ant-table-thead th {
+    background-color: #206ddf !important;
+    font-weight: bold;
+    color: whitesmoke !important;
+    border: .3px solid rgba(109, 109, 109, 0.381);
+  }
+  
+  /* Example to style cells in the table body */
+  .ant-table-tbody td {
+    padding: 8px;
+    border: .3px solid rgba(0, 0, 0, 0.126);
+  }
+  
+  /* Example to style odd rows with a different background color */
+  .ant-table-tbody tr:nth-child(odd) {
+    background-color: #c1dcf3;
+  }

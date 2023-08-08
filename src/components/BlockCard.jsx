@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import {
     HomeOutlined, 
     LogoutOutlined,TransactionOutlined,
@@ -10,11 +10,14 @@ import "./home.css";
 import { Table,Input,Button,Select  } from 'antd';
 import axios from "axios";
 import Cookies from 'js-cookie';
+import "./table.css";
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const BlockCard = () => {
 
+    const navigate = useNavigate();
 
     const [tdata, setTData] = useState([]);
 
@@ -24,10 +27,19 @@ const BlockCard = () => {
       console.log("hello i am here");
       try {
         // setTData([])
-       const result=await  axios.get("http://localhost:5000/admin/card",{headers:{Authorization:`Bearer ${token}`}})
+       const result= await  axios.get("http://localhost:5000/admin/card",{headers:{Authorization:`Bearer ${token}`}});
+
+       if (result.data.status === 200) {
+        setTData(result.data.data);
+        console.log(result.data);
+      } else if (result.data.status === 405) {
+        alert("Expired Token")
+        navigate("/");
+      } else {
+        alert("Something went wrong");
+        navigate("/");
+      }
        
-       setTData(result.data.data);
-       console.log(result.data.data);
   
       } catch (error) {
         console.log(error);
@@ -74,28 +86,48 @@ const BlockCard = () => {
 
       const handleBlock = async(record) => {
         try {
-           const result=await  axios.get("http://localhost:5000/admin/card",{headers:{Authorization:`Bearer ${token}`}})
-            if(result){
+           const result=await  axios.post("http://localhost:5000/admin/card/change-status",
+           {
+            card_no:record.c_no,
+            status:"blocked"
+           },
+           {headers:{Authorization:`Bearer ${token}`}});
 
+            if(result.data.status === 200){
+                console.log(result.data);
+                getcards();
+
+            }else if(result.data.status === 405){
+                alert("Expired Token");
+            }
+            else{
+                alert("Something went wrong");   
             }
       
           } catch (error) {
-            console.log(error);
+            alert("Something went wrong");
           }
-        console.log(record);
       };
     
       const handleUnblock = async(record) => {
         try {
-            const result =await  axios.get("http://localhost:5000/admin/card",{headers:{Authorization:`Bearer ${token}`}})
-            if(result){
-                
-            }
+            const result=await  axios.post("http://localhost:5000/admin/card/change-status",
+            {
+             card_no:record.c_no,
+             status:"active"
+            },
+            {headers:{Authorization:`Bearer ${token}`}});
+ 
+             if(result.data.status === 200){
+                 console.log(result.data);
+                 getcards();
+             }else{
+                 alert("Something went wrong");   
+             }
        
            } catch (error) {
-             console.log(error);
+             alert("Something went wrong");
            }
-         console.log(record);
       };
 
       const c_status = {
@@ -189,7 +221,7 @@ const BlockCard = () => {
                 {record.c_status === 'active' ? (
                   <Button type="primary" danger onClick={() => handleBlock(record)}>Block</Button>
                 ) : (
-                  <Button type="primary" onClick={() => handleUnblock(record.key)}>Unblock</Button>
+                  <Button type="primary" onClick={() => handleUnblock(record)}>Unblock</Button>
                 )}
               </span>
             ),
@@ -225,19 +257,16 @@ const BlockCard = () => {
                 <Link to="/blockcard">Block/Unblock</Link>
             </Menu.Item>
             <Menu.Item key="logout" icon={<LogoutOutlined />}>
-                <Link to="/">Logout</Link>
+                <Link to="/logout">Logout</Link>
             </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
         <Header
+        className="headCont"
           style={{
             padding: 0,
-            background: colorBgContainer,
             textAlign: "center",
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center"
           }}
         >
             <h2 className="text-center"> Card Details</h2>
@@ -248,9 +277,9 @@ const BlockCard = () => {
           }}
         >
           <div
+          className="cont"
             style={{
               padding: 24,
-              minHeight: 460,
               background: colorBgContainer,
             }}
           >

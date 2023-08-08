@@ -5,6 +5,9 @@ import Transaction from './components/Transaction';
 import Home from './components/Home';
 import Logs from './components/Logs';
 import BlockCard from './components/BlockCard';
+import Logout from './components/Logout';
+import AtmDetails from './components/AtmDetails';
+
 
 function App() {
   console.log("Main>>");
@@ -16,6 +19,8 @@ function App() {
         <Route path="/transaction" element={<Transaction/>} />
         <Route path="/logs" element={<Logs/>} />
         <Route path="/blockcard" element={<BlockCard/>} />
+        <Route path="/atmdetails/:id" element={<AtmDetails/>} />
+        <Route path="/logout" element={<Logout/>} />
       </Routes>
     </BrowserRouter>
   );

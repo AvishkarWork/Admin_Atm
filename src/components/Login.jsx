@@ -21,6 +21,7 @@ const Login = () =>{
 
     if(result.data.user){
       // console.log(result.data);
+      sessionStorage.setItem("username",values.username)
       Cookies.set("jwt",result.data.user.webToken)
       console.log(Cookies.get("jwt"));
       navigate('/home')

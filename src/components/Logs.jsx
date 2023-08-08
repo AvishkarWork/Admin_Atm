@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from "react";
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import {
     HomeOutlined, 
     LogoutOutlined,TransactionOutlined,
@@ -10,12 +10,15 @@ import "./home.css";
 import { Table,Input,Button } from 'antd';
 import axios from "axios";
 import Cookies from 'js-cookie';
+import "./table.css";
+
 
 
 const { Header, Content, Footer, Sider } = Layout;
 
 
 const Logs = () => {
+  const navigate = useNavigate();
 
   const [tdata, setTData] = useState([]);
 
@@ -27,8 +30,16 @@ const Logs = () => {
       // setTData([])
      const result=await  axios.get("http://localhost:5000/admin/logs/all",{headers:{Authorization:`Bearer ${token}`}})
      
-     setTData(result.data.data);
-     console.log(result.data.data);
+     if (result.data.status === 200) {
+      setTData(result.data.data);
+      console.log(result.data);
+    } else if (result.data.status === 405) {
+      alert("Expired Token")
+      navigate("/");
+    } else {
+      alert("Something went wrong");
+      navigate("/");
+    }
 
     } catch (error) {
       console.log(error);
@@ -136,15 +147,15 @@ const Logs = () => {
                 <Link to="/blockcard">Block/Unblock</Link>
             </Menu.Item>
             <Menu.Item key="logout" icon={<LogoutOutlined />}>
-                <Link to="/">Logout</Link>
+                <Link to="/logout">Logout</Link>
             </Menu.Item>
         </Menu>
       </Sider>
       <Layout>
         <Header
+        className="headCont"
           style={{
             padding: 0,
-            background: colorBgContainer,
             textAlign: "center"
           }}
         >
@@ -156,9 +167,9 @@ const Logs = () => {
           }}
         >
           <div
+          className="cont"
             style={{
               padding: 24,
-              minHeight: 460,
               background: colorBgContainer,
             }}
           >
